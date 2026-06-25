@@ -14,9 +14,10 @@ fi
 ## Export makepkg variables
 export PACMAN=psp-pacman
 export MAKEPKG_CONF="${PSPDEV}/etc/makepkg.conf"
+export CARCH="$(${PSPDEV}/share/pacman/bin/get-arch)"
 
 ## Add the directory with pacman's binaries to the start of the PATH
 export PATH="${PSPDEV}/share/pacman/bin:${PATH}"
 
 ## Run makepkg
-CARCH="$(${PSPDEV}/share/pacman/bin/get-arch)"  makepkg "$@"
+makepkg "$@"

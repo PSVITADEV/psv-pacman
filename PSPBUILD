@@ -1,6 +1,6 @@
 pkgname=psp-pacman
 pkgver=7.1.0
-pkgrel=1
+pkgrel=2
 pkgdesc="The package manager for the PSPDEV SDK."
 arch=(
   "alpine_x86_64"
@@ -73,8 +73,6 @@ package() {
   ninja install
 
   cd ..
-
-  set -x
 
   mkdir  -m 755 -p "${pkgdir}/etc/"
   install -m 644 ../pacman.conf "${pkgdir}/etc/pacman.conf"
