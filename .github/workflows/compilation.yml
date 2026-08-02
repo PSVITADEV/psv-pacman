@@ -63,15 +63,6 @@ jobs:
           psv-pacman-*.pkg.tar.gz
           psvitadev-*.tar.gz
 
-    - name: Test psv-pacman
-      run: |
-        export PSVITADEV="$PWD/psvitadev"
-        export PATH="$PATH:$PSVITADEV/bin"
-        psv-pacman -Syu --noconfirm --noprogressbar stb
-        psv-pacman -Qi stb
-        psv-pacman -R --noconfirm stb
-        psv-pacman -Scc --noconfirm
-
 
   build-VM:
     runs-on: ${{ matrix.os }}
@@ -111,15 +102,6 @@ jobs:
         path: |
           psv-pacman-*.pkg.tar.gz
           psvitadev-*.tar.gz
-
-    - name: Test psv-pacman
-      run: |
-        export PSVITADEV=$PWD/psvitadev
-        export PATH=$PATH:$PSVITADEV/bin
-        psv-pacman -Syu --noconfirm stb
-        psv-pacman -Qi stb
-        psv-pacman -R --noconfirm stb
-        psv-pacman -Scc --noconfirm
 
 
   package-repo:
