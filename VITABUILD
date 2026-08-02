@@ -1,7 +1,7 @@
-pkgname=psp-pacman
+pkgname=psv-pacman
 pkgver=7.1.0
-pkgrel=2
-pkgdesc="The package manager for the PSPDEV SDK."
+pkgrel=1
+pkgdesc="The package manager for the PSVITADEV SDK."
 arch=(
   "alpine_x86_64"
   "ubuntu_x86_64"
@@ -11,7 +11,7 @@ arch=(
   "macos_x86_64"
   "macos_arm64"
 )
-url="https://github.com/pspdev/psp-pacman"
+url="https://github.com/psvitadev/psv-pacman"
 license=('GPL-2.0-only')
 groups=()
 depends=()
@@ -22,12 +22,12 @@ source=(
   "https://gitlab.archlinux.org/pacman/pacman/-/archive/v${pkgver}/pacman-v${pkgver}.tar.gz"
   "makepkg.conf"
   "pacman.conf"
-  "pacman-${pkgver}-psp-strip.patch"
+  "pacman-${pkgver}-psv-strip.patch"
   "pacman-${pkgver}-rootless.patch"
   "pacman-${pkgver}-add-asroot-option.patch"
   "get-arch"
-  "psp-makepkg"
-  "psp-pacman"
+  "psv-makepkg"
+  "psv-pacman"
 )
 sha256sums=(
   "1090f680958a73dc1f443a1eb919bd2ad77b3caff38e92e9737dec100c647bc9"
@@ -45,23 +45,23 @@ prepare() {
   cd "pacman-v${pkgver}"
 
   # Apply patches
-  patch -p1 < "../pacman-${pkgver}-psp-strip.patch"
+  patch -p1 < "../pacman-${pkgver}-psv-strip.patch"
   patch -p1 < "../pacman-${pkgver}-rootless.patch"
   patch -p1 < "../pacman-${pkgver}-add-asroot-option.patch"
 
   ## Fix some lines in the scripts which have hardcoded paths
-  find ./ -type f -name "*.in" -exec sed -i -e "s#LIBRARY=\${LIBRARY:-'@libmakepkgdir@'}#LIBRARY=\${LIBRARY:-\"\${PSPDEV}/share/makepkg\"}#g" {} \;
-  find ./ -type f -name "*.in" -exec sed -i -e "s#declare -r confdir='@sysconfdir@'#declare -r confdir=\"\${PSPDEV}/etc\"#g" {} \;
-  find ./ -type f -name "*.in" -exec sed -i -e "s#export TEXTDOMAINDIR='@localedir@'#export TEXTDOMAINDIR=\"\${PSPDEV}/share/locale\"#g" {} \;
-  find ./ -type f -name "*.in" -exec sed -i -e "s#'@libmakepkgdir@'#\${PSPDEV}/share/makepkg#g" {} \;
-  find ./ -type f -name "*.in" -exec sed -i -e "s#@libmakepkgdir@#\${PSPDEV}/share/makepkg#g" {} \;
+  find ./ -type f -name "*.in" -exec sed -i -e "s#LIBRARY=\${LIBRARY:-'@libmakepkgdir@'}#LIBRARY=\${LIBRARY:-\"\${PSVITADEV}/share/makepkg\"}#g" {} \;
+  find ./ -type f -name "*.in" -exec sed -i -e "s#declare -r confdir='@sysconfdir@'#declare -r confdir=\"\${PSVITADEV}/etc\"#g" {} \;
+  find ./ -type f -name "*.in" -exec sed -i -e "s#export TEXTDOMAINDIR='@localedir@'#export TEXTDOMAINDIR=\"\${PSVITADEV}/share/locale\"#g" {} \;
+  find ./ -type f -name "*.in" -exec sed -i -e "s#'@libmakepkgdir@'#\${PSVITADEV}/share/makepkg#g" {} \;
+  find ./ -type f -name "*.in" -exec sed -i -e "s#@libmakepkgdir@#\${PSVITADEV}/share/makepkg#g" {} \;
 }
 
 build() {
   cd "pacman-v${pkgver}"
 
   meson build -Dprefix="${pkgdir}" --buildtype=release \
-    -Ddefault_library=static  -Dbuildscript=PSPBUILD \
+    -Ddefault_library=static  -Dbuildscript=VITABUILD \
     -Droot-dir="${pkgdir}" -Dsysconfdir="etc" -Dmakepkg-template-dir="share/makepkg-template" -Dbindir="share/pacman/bin" -Dlocalstatedir="var" \
     -Ddoc=disabled -Di18n=false -Dbash-completions-dir="share/bash-completion/completions"
   cd build
@@ -79,14 +79,14 @@ package() {
   install -m 644 ../makepkg.conf "${pkgdir}/etc/makepkg.conf"
 
   mkdir  -m 755 -p "${pkgdir}/bin/"
-  install -m 755 ../psp-pacman "${pkgdir}/bin/psp-pacman"
-  install -m 755 ../psp-makepkg "${pkgdir}/bin/psp-makepkg"
+  install -m 755 ../psv-pacman "${pkgdir}/bin/psv-pacman"
+  install -m 755 ../psv-makepkg "${pkgdir}/bin/psv-makepkg"
   install -m 755 ../get-arch "${pkgdir}/share/pacman/bin/get-arch"
 
   mkdir -m 755 -p "$pkgdir/share/licenses/$pkgname"
   install -m 644 COPYING "$pkgdir/share/licenses/$pkgname"
 
-  # Add empty directories which psp-pacman will use
+  # Add empty directories which psv-pacman will use
   mkdir -m 755 -p "${pkgdir}/etc/pacman.d/gnupg/"
   mkdir -m 755 -p "${pkgdir}/var/log/"
   mkdir -m 755 -p "${pkgdir}/etc/pacman.d/hooks"
