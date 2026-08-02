@@ -130,7 +130,7 @@ jobs:
 
 
   package-repo:
-    if: contains(github.ref,'refs/heads/master')
+    if: contains(github.ref,'refs/heads/main')
     needs: [build, build-VM]
     runs-on: ubuntu-latest
 
@@ -143,7 +143,7 @@ jobs:
       uses: actions/download-artifact@v8
     - name: Create repo files
       run: |
-        touch index.html
+        echo "psv-pacman repo" >  index.html
         tar -cvf repo.tar index.html */psv-pacman.db */psv-pacman.files */psvitadev.tar.gz */*.pkg.tar.gz
     - name: Upload repo artifact
       uses: actions/upload-artifact@v7
@@ -153,7 +153,7 @@ jobs:
 
 
   publish-repo:
-    if: contains(github.ref,'refs/heads/master')
+    if: contains(github.ref,'refs/heads/main')
     needs: [package-repo]
     runs-on: ubuntu-latest
     environment:
