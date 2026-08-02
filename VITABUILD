@@ -75,8 +75,11 @@ package() {
   cd ..
 
   mkdir  -m 755 -p "${pkgdir}/etc/"
-  install -m 644 ../pacman.conf "${pkgdir}/etc/pacman.conf"
   install -m 644 ../makepkg.conf "${pkgdir}/etc/makepkg.conf"
+  install -m 644 ../pacman.conf "${pkgdir}/etc/pacman.conf"
+
+  # Correct the arch in the repos used in pacman.conf
+  sed -i -e "s/'@arch@'/$(../get-arch)/g" "${pkgdir}/etc/pacman.conf"
 
   mkdir  -m 755 -p "${pkgdir}/bin/"
   install -m 755 ../psv-pacman "${pkgdir}/bin/psv-pacman"
