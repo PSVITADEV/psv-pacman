@@ -42,35 +42,35 @@ jobs:
 
     - uses: actions/checkout@v6
 
-    - name: Compile psp-pacman
+    - name: Compile psv-pacman
       run: |
-        export PSPDEV=$PWD/pspdev
-        export PATH="$PATH:$PSPDEV/bin"
+        export PSVITADEV=$PWD/psvitadev
+        export PATH="$PATH:$PSVITADEV/bin"
         chown -R build:build .
-        sudo -u build PATH="${PATH}" PSPDEV="${PSPDEV}" ./build-and-install.sh
-        psp-pacman -V
+        sudo -u build PATH="${PATH}" PSVITADEV="${PSVITADEV}" ./build-and-install.sh
+        psv-pacman -V
 
     - name: Create archive
       run: |
         ARCH="$(./get-arch)"
         echo "ARCH=${ARCH}" >> $GITHUB_ENV
-        tar -czvf pspdev-${ARCH}.tar.gz pspdev
+        tar -czvf psvitadev-${ARCH}.tar.gz psvitadev
 
     - uses: actions/upload-artifact@v7
       with:
         name: artifact-${{ env.ARCH }}
         path: |
-          psp-pacman-*.pkg.tar.gz
-          pspdev-*.tar.gz
+          psv-pacman-*.pkg.tar.gz
+          psvitadev-*.tar.gz
 
-    - name: Test psp-pacman
+    - name: Test psv-pacman
       run: |
-        export PSPDEV="$PWD/pspdev"
-        export PATH="$PATH:$PSPDEV/bin"
-        psp-pacman -Syu --noconfirm --noprogressbar stb
-        psp-pacman -Qi stb
-        psp-pacman -R --noconfirm stb
-        psp-pacman -Scc --noconfirm
+        export PSVITADEV="$PWD/psvitadev"
+        export PATH="$PATH:$PSVITADEV/bin"
+        psv-pacman -Syu --noconfirm --noprogressbar stb
+        psv-pacman -Qi stb
+        psv-pacman -R --noconfirm stb
+        psv-pacman -Scc --noconfirm
 
 
   build-VM:
@@ -94,39 +94,38 @@ jobs:
       run: |
         brew install bash meson gnu-sed libarchive gpgme
 
-    - name: Compile psp-pacman
+    - name: Compile v-pacman
       run: |
-        export PSPDEV=$PWD/pspdev
-        export PATH="$PATH:$PSPDEV/bin"
-        sudo PATH="${PATH}" PSPDEV="${PSPDEV}" ./build-and-install.sh
-        psp-pacman -V
+        export PSVITADEV=$PWD/psvitadev
+        export PATH="$PATH:$PSVITADEV/bin"
+        sudo PATH="${PATH}" PSVITADEV="${PSVITADEV}" ./build-and-install.sh
+        psv-pacman -V
 
     - name: Create archive
       run: |
-        tar -czvf pspdev-$(./get-arch).tar.gz pspdev
+        tar -czvf psvitadev-$(./get-arch).tar.gz psvitadev
 
     - uses: actions/upload-artifact@v7
       with:
         name: artifact-${{ matrix.os }}
         path: |
-          psp-pacman-*.pkg.tar.gz
-          pspdev-*.tar.gz
+          psv-pacman-*.pkg.tar.gz
+          psvitadev-*.tar.gz
 
-    - name: Test psp-pacman
+    - name: Test psv-pacman
       run: |
-        export PSPDEV=$PWD/pspdev
-        export PATH=$PATH:$PSPDEV/bin
-        psp-pacman -Syu --noconfirm stb
-        psp-pacman -Qi stb
-        psp-pacman -R --noconfirm stb
-        psp-pacman -Scc --noconfirm
+        export PSVITADEV=$PWD/psvitadev
+        export PATH=$PATH:$PSVITADEV/bin
+        psv-pacman -Syu --noconfirm stb
+        psv-pacman -Qi stb
+        psv-pacman -R --noconfirm stb
+        psv-pacman -Scc --noconfirm
 
 
   package-repo:
     if: contains(github.ref,'refs/heads/master')
     needs: [build, build-VM]
     runs-on: ubuntu-latest
-    container: ghcr.io/pspdev/pspsdk:latest
 
     steps:
     - name: Download artifacts
@@ -135,11 +134,11 @@ jobs:
       run: |
         ls -l
         cp artifact-*/* ./
-        apk add --no-cache bash coreutils
-        ${PSPDEV}/share/pacman/bin/repo-add psp-pacman.db.tar.gz *.pkg.tar.gz
-        mv psp-pacman.db.tar.gz psp-pacman.db
-        mv psp-pacman.files.tar.gz psp-pacman.files
-        tar -cvf repo.tar psp-pacman.db psp-pacman.files *.pkg.tar.gz pspdev-*.tar.gz
+        ls -R
+        ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
+        mv psv-pacman.db.tar.gz psv-pacman.db
+        mv psv-pacman.files.tar.gz psv-pacman.files
+        tar -cvf repo.tar psv-pacman.db psv-pacman.files *.pkg.tar.gz psvitadev-*.tar.gz
     - name: Upload repo artifact
       uses: actions/upload-artifact@v7
       with:
@@ -161,22 +160,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
-
-
-  dispatch:
-    if: contains(github.ref,'refs/heads/master')
-    needs: [publish-repo]
-    runs-on: ubuntu-latest
-  
-    steps:
-    - name: Send Compile action
-      run: |
-        export DISPATCH_ACTION="$(echo run_build)"
-        echo "NEW_DISPATCH_ACTION=$DISPATCH_ACTION" >> $GITHUB_ENV
-    - name: Repository Dispatch to psptoolchain-extra
-      uses: peter-evans/repository-dispatch@v4
-      with:
-        repository: ${{ github.repository_owner }}/psptoolchain-extra
-        token: ${{ secrets.DISPATCH_TOKEN }}
-        event-type: ${{ env.NEW_DISPATCH_ACTION }}
-        client-payload: '{"ref": "${{ github.ref }}"}'

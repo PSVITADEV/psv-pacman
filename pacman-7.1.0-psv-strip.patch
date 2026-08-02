@@ -9,7 +9,7 @@ index 926f0ebf..22bf0b2d 100644
 -	if strip "$@" "$binary" -o "$tempfile"; then
 -		cat "$tempfile" > "$binary"
 +	if readelf -A "$binary"|grep '^ISA:'|grep 'MIPS2' > /dev/null; then
-+		if psp-strip "$@" "$binary" -o "$tempfile"; then
++		if arm-psv-strip "$@" "$binary" -o "$tempfile"; then
 +			cat "$tempfile" > "$binary"
 +		fi
 +	else
@@ -26,7 +26,7 @@ index 926f0ebf..22bf0b2d 100644
 -	if strip -R .gnu.lto_* -R .gnu.debuglto_* -N __gnu_lto_v1 "$binary" -o "$tempfile"; then
 -		cat "$tempfile" > "$binary"
 +	if readelf -A "$binary"|grep '^ISA:'|grep 'MIPS2' > /dev/null; then
-+		if psp-strip -R .gnu.lto_* -R .gnu.debuglto_* -N __gnu_lto_v1 "$binary" -o "$tempfile"; then
++		if arm-psv-strip -R .gnu.lto_* -R .gnu.debuglto_* -N __gnu_lto_v1 "$binary" -o "$tempfile"; then
 +			cat "$tempfile" > "$binary"
 +		fi
 +	else
