@@ -44,30 +44,34 @@ jobs:
 
     - name: Compile psv-pacman
       run: |
-        export PSVITADEV=$PWD/psvitadev
-        export PATH="$PATH:$PSVITADEV/bin"
+        export PSVITADEV="${PWD}/psvitadev"
+        export PATH="${PATH}:${PSVITADEV}/bin"
         chown -R build:build .
         sudo -u build PATH="${PATH}" PSVITADEV="${PSVITADEV}" ./build-and-install.sh
         psv-pacman -V
 
     - name: Create archive
       run: |
-        ARCH="$(./get-arch)"
-        echo "ARCH=${ARCH}" >> $GITHUB_ENV
-        tar -czvf psvitadev-${ARCH}.tar.gz psvitadev
+        tar -czvf psvitadev.tar.gz psvitadev
 
     - name: Create repo files
       run: |
+        export PSVITADEV="${PWD}/psvitadev"
         ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
         mv psv-pacman.db.tar.gz psv-pacman.db
         mv psv-pacman.files.tar.gz psv-pacman.files
+
+    - name: Set ARCH variable
+      run: |
+        ARCH="$(./get-arch)"
+        echo "ARCH=${ARCH}" >> $GITHUB_ENV
 
     - uses: actions/upload-artifact@v7
       with:
         name: ${{ env.ARCH }}
         path: |
           psv-pacman-*.pkg.tar.gz
-          psvitadev-*.tar.gz
+          psvitadev.tar.gz
           psv-pacman.db
           psv-pacman.files
 
@@ -95,30 +99,33 @@ jobs:
 
     - name: Compile psv-pacman
       run: |
-        export PSVITADEV=$PWD/psvitadev
-        export PATH="$PATH:$PSVITADEV/bin"
+        export PSVITADEV="${PWD}/psvitadev"
+        export PATH="${PATH}:${PSVITADEV}/bin"
         sudo PATH="${PATH}" PSVITADEV="${PSVITADEV}" ./build-and-install.sh
         psv-pacman -V
 
     - name: Create archive
       run: |
-        ARCH="$(./get-arch)"
-        echo "ARCH=${ARCH}" >> $GITHUB_ENV
-        tar -czvf psvitadev-${ARCH}.tar.gz psvitadev
-        ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
+        tar -czvf psvitadev.tar.gz psvitadev
 
     - name: Create repo files
       run: |
+        export PSVITADEV=${PWD}/psvitadev
         ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
         mv psv-pacman.db.tar.gz psv-pacman.db
         mv psv-pacman.files.tar.gz psv-pacman.files
+
+    - name: Set ARCH variable
+      run: |
+        ARCH="$(./get-arch)"
+        echo "ARCH=${ARCH}" >> $GITHUB_ENV
 
     - uses: actions/upload-artifact@v7
       with:
         name: ${{ env.ARCH }}
         path: |
           psv-pacman-*.pkg.tar.gz
-          psvitadev-*.tar.gz
+          psvitadev.tar.gz
           psv-pacman.db
           psv-pacman.files
 
