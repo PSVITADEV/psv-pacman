@@ -2,9 +2,8 @@ name: CI
 
 on:
   push:
+    branches: [main]
   pull_request:
-  repository_dispatch:
-    types: [run_build]
 
 permissions:
   contents: read
@@ -162,8 +161,6 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
 
     steps:
-      - name: Setup Pages
-        uses: actions/configure-pages@v6
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
