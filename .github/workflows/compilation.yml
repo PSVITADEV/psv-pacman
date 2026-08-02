@@ -116,8 +116,8 @@ jobs:
       run: |
         ls -l
         cp artifact-*/* ./
-        ls -R
-        ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
+        tar -xvf psvitadev-ubuntu_x86_64.tar.gz
+        psvitadev/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
         mv psv-pacman.db.tar.gz psv-pacman.db
         mv psv-pacman.files.tar.gz psv-pacman.files
         tar -cvf repo.tar psv-pacman.db psv-pacman.files *.pkg.tar.gz psvitadev-*.tar.gz
