@@ -141,15 +141,13 @@ jobs:
         sudo apt-get -y install libarchive-tools
     - name: Download artifacts
       uses: actions/download-artifact@v8
-    - name: Create repo files
-      run: |
-        echo "psv-pacman repo" >  index.html
-        tar -cvf repo.tar index.html */psv-pacman.db */psv-pacman.files */psvitadev.tar.gz */*.pkg.tar.gz
-    - name: Upload repo artifact
-      uses: actions/upload-artifact@v7
       with:
-        name: github-pages
-        path: repo.tar
+        path: repo/
+    - name: Upload repo artifact
+      id: deployment
+      uses: actions/upload-pages-artifact@v5
+      with:
+        path: repo/
 
 
   publish-repo:
