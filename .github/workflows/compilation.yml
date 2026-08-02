@@ -56,12 +56,20 @@ jobs:
         echo "ARCH=${ARCH}" >> $GITHUB_ENV
         tar -czvf psvitadev-${ARCH}.tar.gz psvitadev
 
+    - name: Create repo files
+      run: |
+        ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
+        mv psv-pacman.db.tar.gz psv-pacman.db
+        mv psv-pacman.files.tar.gz psv-pacman.files
+
     - uses: actions/upload-artifact@v7
       with:
-        name: artifact-${{ env.ARCH }}
+        name: ${{ env.ARCH }}
         path: |
           psv-pacman-*.pkg.tar.gz
           psvitadev-*.tar.gz
+          psv-pacman.db
+          psv-pacman.files
 
 
   build-VM:
@@ -94,14 +102,25 @@ jobs:
 
     - name: Create archive
       run: |
-        tar -czvf psvitadev-$(./get-arch).tar.gz psvitadev
+        ARCH="$(./get-arch)"
+        echo "ARCH=${ARCH}" >> $GITHUB_ENV
+        tar -czvf psvitadev-${ARCH}.tar.gz psvitadev
+        ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
+
+    - name: Create repo files
+      run: |
+        ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
+        mv psv-pacman.db.tar.gz psv-pacman.db
+        mv psv-pacman.files.tar.gz psv-pacman.files
 
     - uses: actions/upload-artifact@v7
       with:
-        name: artifact-${{ matrix.os }}
+        name: ${{ env.ARCH }}
         path: |
           psv-pacman-*.pkg.tar.gz
           psvitadev-*.tar.gz
+          psv-pacman.db
+          psv-pacman.files
 
 
   package-repo:
@@ -118,14 +137,7 @@ jobs:
       uses: actions/download-artifact@v8
     - name: Create repo files
       run: |
-        ls -l
-        cp artifact-*/* ./
-        tar -xvf psvitadev-ubuntu_x86_64.tar.gz
-        export PSVITADEV="${PWD}/psvitadev"
-        ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
-        mv psv-pacman.db.tar.gz psv-pacman.db
-        mv psv-pacman.files.tar.gz psv-pacman.files
-        tar -cvf repo.tar psv-pacman.db psv-pacman.files *.pkg.tar.gz psvitadev-*.tar.gz
+        tar -cvf repo.tar */psv-pacman.db */psv-pacman.files */*.pkg.tar.gz */psvitadev-*.tar.gz
     - name: Upload repo artifact
       uses: actions/upload-artifact@v7
       with:
