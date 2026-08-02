@@ -27,6 +27,10 @@ fi
 ## Clean up from previous builds
 rm -rf temp_build pkg src psv-pacman-*-*.pkg.tar.gz
 
+# Set variables needed when building the package
+export MAKEPKG_CONF="$WORKDIR/makepkg.conf"
+export CARCH="$(./get-arch)"
+
 ## Install makepkg from source if it isn't already available and build the package
 if ! which makepkg > /dev/null; then
     echo "Did not find makepkg, downloading and building pacman from source"
@@ -44,12 +48,12 @@ if ! which makepkg > /dev/null; then
     cd "$WORKDIR"
     export PATH="${pkgdir}/share/pacman/bin:${PATH}"
     if (( EUID == 0 )); then
-        CARCH="$(./get-arch)" PSVITADEV="${pkgdir}" makepkg -p VITABUILD --asroot .
+        PSVITADEV="${pkgdir}" makepkg -p VITABUILD --asroot .
     else
-        CARCH="$(./get-arch)" PSVITADEV="${pkgdir}" makepkg -p VITABUILD .
+        PSVITADEV="${pkgdir}" makepkg -p VITABUILD .
     fi
 else
-    CARCH="$(./get-arch)" makepkg -p VITABUILD .
+    makepkg -p VITABUILD .
 fi
 
 ## Create the required directories for installation
