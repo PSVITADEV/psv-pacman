@@ -110,6 +110,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get -y install util-linux
     - name: Download artifacts
       uses: actions/download-artifact@v8
     - name: Create repo files
