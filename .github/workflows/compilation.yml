@@ -144,7 +144,7 @@ jobs:
       uses: actions/download-artifact@v8
     - name: Create repo files
       run: |
-        tar -cvf repo.tar */psv-pacman.db */psv-pacman.files */*.pkg.tar.gz */psvitadev-*.tar.gz
+        tar -cvf repo.tar */psv-pacman.db */psv-pacman.files */psvitadev.tar.gz */*.pkg.tar.gz
     - name: Upload repo artifact
       uses: actions/upload-artifact@v7
       with:
