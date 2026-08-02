@@ -1,9 +1,9 @@
-# PSVita Pacman
+# PSVITADEV Pacman
 
-This respository contains all the files needed to build and install the pacman package manager for the PSVITA sdk. Pacman can be used to build and manage packages for the Playstation Vita and development for it.
+This respository contains all the files needed to build and install the pacman package manager for the PSVITADEV sdk. Pacman can be used to build and manage packages for the Playstation Vita and development for it.
 
 This package provides the following commands:
-- **psv-pacman** - Allows users to install and manage Vita packages.
+- **psv-pacman** - Allows users to install and manage PSVITADEV packages.
 - **psv-makepkg** - Allows users to build packages from VITABUILD files.
 
 ## Dependencies
