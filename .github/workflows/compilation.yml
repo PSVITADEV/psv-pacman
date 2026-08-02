@@ -110,10 +110,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Install dependencies
-      run: |
-        sudo apt-get update
-        sudo apt-get -y install util-linux
     - name: Download artifacts
       uses: actions/download-artifact@v8
     - name: Create repo files
@@ -121,7 +117,8 @@ jobs:
         ls -l
         cp artifact-*/* ./
         tar -xvf psvitadev-ubuntu_x86_64.tar.gz
-        psvitadev/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
+        export PSVITADEV="${PWD}/psvitadev"
+        ${PSVITADEV}/share/pacman/bin/repo-add psv-pacman.db.tar.gz *.pkg.tar.gz
         mv psv-pacman.db.tar.gz psv-pacman.db
         mv psv-pacman.files.tar.gz psv-pacman.files
         tar -cvf repo.tar psv-pacman.db psv-pacman.files *.pkg.tar.gz psvitadev-*.tar.gz
