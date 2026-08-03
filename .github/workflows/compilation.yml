@@ -135,10 +135,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v6
+
     - name: Download artifacts
       uses: actions/download-artifact@v8
       with:
         path: repo/
+
+    - name: Copy index files
+      run: |
+        cp site/* repo/
+        cp get-arch repo/
+
     - name: Upload repo artifact
       id: deployment
       uses: actions/upload-pages-artifact@v5
